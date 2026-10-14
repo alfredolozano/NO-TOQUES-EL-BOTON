@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#171225">
+<title>NO TOQUES EL BOTON RISA </title>
+<style>
+:root{--:#171225;--panel:#281d3b;--pink:#ff4fa3;--yellow:#ffe66;--cyan:#65f4ff;--red:#ff4055;--green:#75ff9b
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;padding:18px 14px 30px;background:radial-gradient(ellipse at top,#493063,#171225 60%,#100d18);color:#fff8ff;font-family:system-ui,-apple-system,Arial,sans-serif;display:flex;justify-content:center}
+.app{width:min(100%,470px)}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:4px 0 18px}
+.logo{font-weight:1000;font-size:clamp(25px,7vw,34px);letter-spacing:-1.5px;line-height:.94;text-shadow:3px 3px #000}
+.logo span{color:var(--yellow)}
+.tag{background:#ffffff12;border:1px solid #ffffff30;border-radius:30px;padding:8px;font-size:11px;font-weight:900}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:13px}
+.stat{background:#ffffff0d;border:1px solid #ffffff20;border-radius:15px;padding:10px 4px;text-align:center}
+.stat small{display:block;font-size:10px;letter-spacing:.6px;color:#cbbddd;font-weight:900}
+.stat strong{display:block;font-size:24px}
+.card{background:linear-gradient(145deg,#2b2042,#1d172c);border:1px solid #ffffff25;border-radius:23px;padding:17px;box-shadow:0 12px 35px #0004}
+.row{display:flex;justify-content:space-between;font-size:12px;color:#d5c7e6;font-weight:900;letter-spacing:.8px}
+.track{height:7px;background:#ffffff1a;border-radius:10px;margin-top:8px;overflow:hidden}
+#bar{height:100%;width:100%;background:linear-gradient(90deg,var(--cyan),var(--pink))}
+#instruction{font-size:clamp(27px,7vw,36px);font-weight:1000;line-height:1.05;text-align:center;min-height:85px;display:flex;align-items:center;justify-content:center;margin:20px 0 8px;overflow-wrap:anywhere}
+#hint{text-align:center;min-height:40px;color:#d8cce8;font-size:14px}
+.zone{min-height:205px;display:flex;align-items:center;justify-content:center;position:relative}
+#button{width:min(57vw,215px);height:min(57vw,215px);max-width:215px;max-height:215px;border-radius:50%;border:9px solid #ff8291;background:radial-gradient(circle at 32% 23%,#ff909b,#ff334e 60%,#bd002b);box-shadow:0 11px 0 #85152e,0 18px 27px #0008,inset 0 5px 8px #ffffff75;color:white;font-size:27px;font-weight:1000;text-shadow:0 3px #9c1630;cursor:pointer;touch-action:manipulation}
+#button:active{transform:translateY(7px);box-shadow:0 4px 0 #85152e}
+#button:disabled{filter:grayscale(.3);cursor:default}
+.meme{position:absolute;font-size:39px;pointer-events:none}
+.meme.left{left:0;top:15%;transform:rotate(-12deg)}
+.meme.right{right:0;bottom:8%;transform:rotate(12deg)}
+#feedback{min-height:27px;text-align:center;font-weight:950;color:var(--yellow);margin:6px 0}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:13px}
+button.action{border:1px solid #ffffff25;border-radius:14px;padding:14px 8px;font-weight:950;font-size:14px;cursor:pointer}
+.primary{background:linear-gradient(135deg,var(--yellow),#ffb447);color:#29152e;border:0!important;box-shadow:0 4px #a86a29}
+.secondary{background:#ffffff12;color:white}
+#help{width:100%;margin-top:9px}
+.note{text-align:center;color:#ad9fbe;font-size:11px;margin-top:13px;line-height:1.4}
+.overlay{position:fixed;inset:0;background:#100b1beF;display:flex;align-items:center;justify-content:center;padding:20px;z-index:10}
+.modal{width:min(100%,380px);background:#281d3b;border:1px solid #ffffff35;border-radius:24px;padding:24px;text-align:center;box-shadow:0 20px 60px #0009}
+.modal h2{font-size:32px;line-height:.98;margin:8px 0 14px}
+.modal p{color:#e0d5ec;line-height:1.5}
+.modal button{width:100%;margin-top:10px}
+.hide{display:none!important}
+@media(min-width:500px){body{padding-top:28px}.zone{min-height:245px}}
+</style>
+</head>
+<body>
+<main class="app">
+<header>
+  <div class="logo">NO TOQUES<br><span>EL BOTÓN</span></div>
+  <div class="tag">😂 MODO MEME</div>
+</header>
+
+<section class="stats">
+  <div class="stat"><small>PUNTOS</small><strong id="score">0</strong></div>
+  <div class="stat"><small>RACHA 🔥</small><strong id="streak">0</strong></div>
+  <div class="stat"><small>RÉCORD</small><strong id="best">0</strong></div>
+</section>
+
+<section class="card">
+  <div class="row"><span id="round">RONDA 1</span><span id="clock">8.0 s</span></div>
+  <div class="track"><div id="bar"></div></div>
+  <div id="instruction">¿Crees que puedes ganar?</div>
+  <div id="hint">El juego no es tu amigo. 😂</div>
+  <div class="zone">
+    <span class="meme left" id="meme1">🤨</span>
+    <button id="button" disabled>TOCA</button>
+    <span class="meme right" id="meme2">💀</span>
+  </div>
+  <div id="feedback">Pulsa empezar para jugar</div>
+</section>
+
+<div class="actions">
+  <button class="action primary" id="start">▶ EMPEZAR</button>
+  <button class="action secondary" id="share">📲 RETAR A UN AMIGO</button>
+</div>
+<button class="action secondary" id="help">❓ ¿CÓMO SE JUEGA?</button>
+<div class="note">Tu récord se guarda en este navegador. ¡A ver quién es el más listo! 🤡</div>
+</main>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div style="font-size:52px">🔴🤡</div>
+    <h2>NO TOQUES<br>EL BOTÓN</h2>
+    <p>Lee la instrucción y decide rápido. Algunas rondas quieren engañarte. Si dice que no lo toques, resiste la tentación.</p>
+    <p><b>Objetivo:</b> conseguir la mayor puntuación sin caer en las trampas.</p>
+    <button class="action primary" id="play">¡A VER SI MUY LISTO!</button>
+  </div>
+</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const button = $('button');
+  let active = false, score = 0, streak = 0, round = 0;
+  let task = null, answered = false, deadline = 0, frame = 0;
+  let doubleCount = 0, doubleTimer = null;
+  let best = Number(localStorage.getItem('ntb_best') || 0);
+  $('best').textContent = best;
+
+  const memes = ['🤨','💀','🗿','😭','🤡','👀','🫠','🧠','🐸','😈','🫵','🤯'];
+  const tasks = [
+    {text:'TOCA EL BOTÓN', action:'tap', hint:'Sí, en serio. No pienses tanto.'},
+    {text:'NO TOQUES EL BOTÓN', action:'wait', hint:'Manos quietas. No caigas.'},
+    {text:'TÓCALO DOS VECES', action:'double', hint:'Dos toques rápidos. Ni uno ni tres.'},
+    {text:'NO LO TOQUES… ¿O SÍ?', action:'wait', hint:'La instrucción dice NO. No te dejes engañar.'},
+    {text:'TOCA Y ESPERA', action:'tap', hint:'Un solo toque. Después, paciencia.'},
+    {text:'¡NO TOQUES NADA!', action:'wait', hint:'Ignora el botón. Puedes hacerlo.'},
+    {text:'UN SOLO TOQUE. YA.', action:'tap', hint:'Un toque basta.'},
+    {text:'TOCA DOS VECES… MENTIRA', action:'tap', hint:'La última palabra cambia todo: un toque.'},
+    {text:'NO TOQUES POR 3 SEGUNDOS', action:'wait', hint:'Aguanta sin tocar hasta que termine el tiempo.'},
+    {text:'TOCA EL BOTÓN ROJO', action:'tap', hint:'¿Qué podría salir mal?'}
+  ];
+
+  function feedback(message, color='var(--yellow)') {
+    $('feedback').textContent = message;
+    $('feedback').style.color = color;
+  }
+
+  function chooseTask() {
+    const available = tasks.filter(t => t !== task);
+    task = available[Math.floor(Math.random() * available.length)];
+    answered = false;
+    $('instruction').textContent = task.text;
+    $('hint').textContent = task.hint;
+    $('meme1').textContent = memes[Math.floor(Math.random()*memes.length)];
+    $('meme2').textContent = memes[Math.floor(Math.random()*memes.length)];
+    button.textContent = Math.random() < .2 ? '¿YO?' : 'TOCA';
+    round++;
+    $('round').textContent = 'RONDA ' + round;
+    const seconds = Math.max(3.5, 8 - (round-1)*.18);
+    deadline = performance.now() + seconds*1000;
+    $('clock').textContent = seconds.toFixed(1) + ' s';
+    $('bar').style.width = '100%';
+    feedback('Concéntrate… 👀');
+    tick();
+  }
+
+  function tick() {
+    cancelAnimationFrame(frame);
+    if (!active) return;
+    const remaining = Math.max(0, (deadline - performance.now()) / 1000);
+    $('clock').textContent = remaining.toFixed(1) + ' s';
+    $('bar').style.width = (remaining / Math.max(3.5, 8-(round-1)*.18)*100) + '%';
+    if (remaining <= 0) {
+      if (!answered) {
+        if (task.action === 'wait') win('¡Autocontrol nivel monje! 🧘');
+        else lose('¡Se te acabó el tiempo! 🐢');
+      }
+      return;
+    }
+    frame = requestAnimationFrame(tick);
+  }
+
+  function win(message) {
+    if (!active || answered) return;
+    answered = true;
+    score += 10 + Math.min(streak, 10);
+    streak++;
+    $('score').textContent = score;
+    $('streak').textContent = streak;
+    if (score > best) {
+      best = score;
+      localStorage.setItem('ntb_best', best);
+      $('best').textContent = best;
+    }
+    feedback(message, 'var(--green)');
+    setTimeout(() => { if (active) chooseTask(); }, 650);
+  }
+
+  function lose(message) {
+    if (!active) return;
+    active = false;
+    cancelAnimationFrame(frame);
+    clearTimeout(doubleTimer);
+    doubleCount = 0;
+    streak = 0;
+    $('streak').textContent = '0';
+    button.disabled = true;
+    $('instruction').textContent = 'FIN DEL JUEGO 😭';
+    $('hint').textContent = 'Hiciste ' + score + ' puntos. ¿Puedes superar tu récord?';
+    $('clock').textContent = '0.0 s';
+    $('bar').style.width = '0%';
+    feedback(message, 'var(--red)');
+    $('start').textContent = '↻ VOLVER A INTENTAR';
+  }
+
+  button.addEventListener('click', () => {
+    if (!active || answered) return;
+    if (task.action === 'double') {
+      doubleCount++;
+      if (doubleCount === 1) {
+        feedback('¡OTRO TOQUE, RÁPIDO! 👀');
+        doubleTimer = setTimeout(() => {
+          if (active && !answered) lose('¡Te faltó el segundo toque! 💀');
+          doubleCount = 0;
+        }, 550);
+      } else if (doubleCount === 2) {
+        clearTimeout(doubleTimer);
+        doubleCount = 0;
+        win('¡DOBLE TOQUE! PRESUMIDO 😎');
+      }
+    } else if (task.action === 'wait') {
+      lose('¡CAÍSTE! La instrucción era NO tocar 😂');
+    } else {
+      win('¡Correcto! Tu cerebro sí sirve 🧠');
+    }
+  });
+
+  function startGame() {
+    cancelAnimationFrame(frame);
+    clearTimeout(doubleTimer);
+    active = true; score = 0; streak = 0; round = 0; task = null;
+    $('score').textContent = '0';
+    $('streak').textContent = '0';
+    button.disabled = false;
+    $('start').textContent = '↻ REINICIAR';
+    chooseTask();
+  }
+
+  $('start').addEventListener('click', startGame);
+  $('play').addEventListener('click', () => {
+    $('overlay').classList.add('hide');
+    startGame();
+  });
+  $('help').addEventListener('click', () => {
+    $('overlay').classList.remove('hide');
+    $('play').textContent = '¡ENTENDIDO, VAMOS!';
+  });
+  $('share').addEventListener('click', async () => {
+    const message = `😂 Te reto en NO TOQUES EL BOTÓN. Mi puntuación es ${score}. ¿Puedes superarla?`;
+    if (navigator.share) {
+      try { await navigator.share({title:'NO TOQUES EL BOTÓN', text:message, url:location.href}); } catch(e) {}
+    } else {
+      try {
+        await navigator.clipboard.writeText(message + ' ' + location.href);
+        feedback('¡Reto copiado! Pégalo en tu chat 📲');
+      } catch(e) {
+        prompt('Copia este reto y envíaselo a un amigo:', message + ' ' + location.href);
+      }
+    }
+  });
+})();
+</script>
+</body>
+</html>
